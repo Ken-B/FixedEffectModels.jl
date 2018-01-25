@@ -16,11 +16,11 @@ import StatsModels: ModelMatrix, ModelFrame, Terms, @formula, Formula
 import StatsBase: coef, nobs, coeftable, vcov, predict, residuals, var, RegressionModel, model_response, stderr, confint, fit, CoefTable, df_residual
 ##############################################################################
 ##
-## Exported methods and types 
+## Exported methods and types
 ##
 ##############################################################################
 
-export group, 
+export group,
 reg,
 partial_out,
 residualize!,
@@ -41,16 +41,16 @@ RegressionResultIV,
 RegressionResultFE,
 RegressionResultFEIV,
 
-AbstractVcovFormula, 
-VcovSimpleFormula, 
-VcovRobustFormula, 
+AbstractVcovFormula,
+VcovSimpleFormula,
+VcovRobustFormula,
 VcovClusterFormula,
 VcovFormula,
 
-AbstractVcovMethod, 
+AbstractVcovMethod,
 VcovMethod,
-VcovSimpleMethod, 
-VcovWhiteMethod, 
+VcovSimpleMethod,
+VcovWhiteMethod,
 VcovClusterMethod,
 
 vcov!,
@@ -66,6 +66,7 @@ Model,
 ##
 ##############################################################################
 include("utils/group.jl")
+include("utils/factors.jl")
 include("utils/formula.jl")
 include("utils/model.jl")
 include("utils/lsmr.jl")
