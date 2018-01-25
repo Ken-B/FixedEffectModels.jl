@@ -1,12 +1,14 @@
+using DataFrames, FixedEffectModels, Base.Test, CSV, CodecZlib
 
-using DataFrames, FixedEffectModels, Base.Test
-#df = readtable("/Users/Matthieu/Dropbox/Github/FixedEffectModels.jl/dataset/Cigar.csv.gz")
-df = readtable(joinpath(dirname(@__FILE__), "..", "dataset", "Cigar.csv.gz"))
+filename = joinpath(dirname(@__FILE__), "..", "dataset", "Cigar.csv.gz")
+df = open(GzipDecompressorStream, filename) do stream
+	CSV.read(stream)
+end
 df[:id1] = df[:State]
 df[:id2] = df[:Year]
-df[:pid1] = pool(df[:id1])
-df[:ppid1] = pool(div(df[:id1], 10))
-df[:pid2] = pool(df[:id2])
+df[:pid1] = categorical(df[:id1])
+df[:ppid1] = categorical(div.(df[:id1], 10))
+df[:pid2] = categorical(df[:id2])
 df[:y] = df[:Sales]
 df[:x1] = df[:Price]
 df[:z1] = df[:Pimin]
@@ -180,7 +182,7 @@ x = reg(df, m)
 
 
 #colinearity with fixed effect
-df[:dec] = pool(div(df[:id2], 10))
+df[:dec] = categorical(div.(df[:id2], 10))
 m = @model y ~ dec fe = pid2
 x = reg(df, m)
 @test coef(x)[1] ≈ 0.0
@@ -344,11 +346,14 @@ x = reg(df, m)
 ## corresponds to abdata in Stata, for instance reghxe wage emp [w=indoutpt], a(id year)
 ##
 ##############################################################################
-df = readtable(joinpath(dirname(@__FILE__), "..", "dataset", "EmplUK.csv.gz"))
+filename = joinpath(dirname(@__FILE__), "..", "dataset", "EmplUK.csv.gz")
+df = open(GzipDecompressorStream, filename) do stream
+	CSV.read(stream)
+end
 df[:id1] = df[:Firm]
 df[:id2] = df[:Year]
-df[:pid1] = pool(df[:id1])
-df[:pid2] = pool(df[:id2])
+df[:pid1] = categorical(df[:id1])
+df[:pid2] = categorical(df[:id2])
 df[:y] = df[:Wage]
 df[:x1] = df[:Emp]
 df[:w] = df[:Output]
@@ -397,8 +402,8 @@ end
 ## NLS model
 ##
 ##############################################################################
-df = readtable(joinpath(dirname(@__FILE__), "..", "dataset", "nls.csv"))
-pool!(df, [:idcode, :year, :race])
+df = CSV.read(joinpath(dirname(@__FILE__), "..", "dataset", "nls.csv"))
+categorical!(df, [:idcode, :year, :race])
 x = reg(df, @model(ln_wage ~ hours + race, fe = idcode))
 @test coef(x)[2] ≈ 0.0
 x = reg(df, @model(ln_wage ~ hours + race, fe = idcode + year))

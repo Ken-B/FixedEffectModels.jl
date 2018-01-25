@@ -22,15 +22,15 @@ A typical formula is composed of one dependent variable, exogeneous variables, e
 ```
 depvar ~ exogeneousvars + (endogeneousvars ~ instrumentvars
 ```
-Categorical variable should be of type PooledDataArray.  Use the function `pool` to create PooledDataArray.
+Categorical variable should be of type CategoricalArray.  Use the function `categorical[!]` to create a CategoricalArray.
 Models with instruments variables are estimated using 2SLS. `reg` tests for weak instruments by computing the Kleibergen-Paap rk Wald F statistic, a generalization of the Cragg-Donald Wald F statistic for non i.i.d. errors. The statistic is similar to the one returned by the Stata command `ivreg2`.
 
 ### Examples
 ```julia
 using DataFrames, RDatasets, FixedEffectModels
 df = dataset("plm", "Cigar")
-df[:StatePooled] =  pool(df[:State])
-df[:YearPooled] =  pool(df[:Year])
+df[:StatePooled] = categorical(df[:State])
+df[:YearPooled]  = categorical(df[:Year])
 reg(df, @model(Sales ~ Price, fe = StatePooled + YearPooled))
 reg(df, @model(Sales ~ NDI, fe = StatePooled + StatePooled&Year))
 reg(df, @model(Sales ~ NDI, fe = StatePooled*Year))
@@ -43,7 +43,7 @@ reg(df, @model(Sales ~ NDI, vcov = cluster(StatePooled + YearPooled)))
 ```
 """
 
-
+# TODO: support PooledArray besides CategoricalArrays
 
 # TODO: minimize memory
 function reg(df::AbstractDataFrame, m::Model)
@@ -76,14 +76,14 @@ function reg(df::AbstractDataFrame, f::Formula;
     rt = Terms(rf)
     has_absorb = feformula != nothing
     if has_absorb
-        # check depth 1 symbols in original formula are all PooledDataArray
+        # check depth 1 symbols in original formula are all categorical
         if isa(feformula, Symbol)
             x = feformula
-            !isa(df[x], PooledDataArray) && error("$x should be PooledDataArray")
+            !isa(df[x], AbstractCategoricalVector) && error("$x should be CategoricalArray")
         elseif feformula.args[1] == :+
             x = feformula.args
             for i in 2:length(x)
-                isa(x[i], Symbol) && !isa(df[x[i]], PooledDataArray) && error("$(x[i]) should be PooledDataArray")
+                isa(x[i], Symbol) && !isa(df[x[i]], AbstractCategoricalVector) && error("$(x[i]) should be AbstractCategoricalVector")
             end
         end
     end
@@ -129,7 +129,7 @@ function reg(df::AbstractDataFrame, f::Formula;
     main_vars = unique(convert(Vector{Symbol}, vcat(vars, endo_vars, iv_vars)))
     for v in main_vars
         # in case subdataframe, don't construct subdf[v] if you dont need to do it
-        if typeof(df[v]) <: PooledDataArray
+        if typeof(df[v]) <: AbstractCategoricalVector
             dropUnusedLevels!(subdf[v])
         end
     end

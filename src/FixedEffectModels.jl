@@ -1,4 +1,4 @@
-__precompile__(true)
+#__precompile__(true)
 
 module FixedEffectModels
 
@@ -10,10 +10,12 @@ module FixedEffectModels
 import Base.BLAS: axpy!
 import Base: A_mul_B!, Ac_mul_B!, size, copy!, getindex, length, fill!, norm, scale!, eltype, length, view, start, next, done
 import Distributions: TDist, ccdf, FDist, Chisq, AliasTable, Categorical
-import DataArrays: RefArray, PooledDataArray, PooledDataVector, DataArray, DataVector, compact, NAtype
-import DataFrames: DataFrame, AbstractDataFrame, coefnames, completecases, names!, pool
-import StatsModels: ModelMatrix, ModelFrame, Terms, @formula, Formula
+import DataArrays: RefArray, PooledDataArray, PooledDataVector, DataArray, DataVector, compact
+import DataFrames: DataFrame, AbstractDataFrame, completecases, names!, categorical
+import StatsModels: ModelMatrix, ModelFrame, Terms, @formula, Formula, coefnames
 import StatsBase: coef, nobs, coeftable, vcov, predict, residuals, var, RegressionModel, model_response, stderr, confint, fit, CoefTable, df_residual
+# Depreciated
+import DataArrays: NAtype
 ##############################################################################
 ##
 ## Exported methods and types 
@@ -58,7 +60,8 @@ shat!,
 VcovData,
 
 Model,
-@model
+@model,
+coef
 
 ##############################################################################
 ##
