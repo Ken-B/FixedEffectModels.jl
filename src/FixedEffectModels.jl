@@ -9,18 +9,12 @@ module FixedEffectModels
 import Base.BLAS: axpy!
 import Base: A_mul_B!, Ac_mul_B!, size, copy!, getindex, length, fill!, norm, scale!, eltype, length, view, start, next, done
 import Distributions: TDist, ccdf, FDist, Chisq, AliasTable, Categorical
-<<<<<<< HEAD
-import DataArrays: RefArray, PooledDataArray, PooledDataVector, DataArray, DataVector, compact, NAtype
-import DataFrames: DataFrame, AbstractDataFrame, coefnames, completecases, names!, pool
-import StatsModels: ModelMatrix, ModelFrame, Terms, @formula, Formula
-=======
 import Missings: Missing
 import DataArrays: DataArray
 import CategoricalArrays: CategoricalArray, CategoricalVector, compress, categorical, CategoricalPool, levels, droplevels!
 import DataFrames: DataFrame, AbstractDataFrame, completecases, names!, ismissing
 import StatsModels: ModelMatrix, ModelFrame, Terms, coefnames, Formula, completecases, names!,  @formula
 using Reexport
->>>>>>> matthieugomez/master
 import StatsBase: coef, nobs, coeftable, vcov, predict, residuals, var, RegressionModel, model_response, stderr, confint, fit, CoefTable, df_residual
 @reexport using StatsBase
 ##############################################################################
